@@ -54,7 +54,7 @@ A Gene Transfer Format file (GTF) is a tabular text format, each line of which c
 
 # SRA TOOLKIT 
 
-The subcommand fasterq-dump is the most recent and an upgraded version of the previous fastq-dump. While it requires more computational resources, it is faster and more efficient. The file sra.sh  is a template batch script designed to download sequencing data, using the fasterq-dump command, by taking a metadata file in CSV format with information about: datasetName, rawdataFolder, processingFolder, sampleNamesFile, fastqExtension, read1Extension, read2Extension. This structure enhances the reproducibility of the pipeline with different datasets, without directly changing the information in the script. The flag –outdir specifies the output directory for the fastq files, and the –threads sets the number of CPUs used. Increasing the number of threads reduces runtime but increases the computational load on the HPC cluster. 
+The subcommand fasterq-dump is the most recent and an upgraded version of the previous fastq-dump. While it requires more computational resources, it is faster and more efficient. The file sra.sh  is a template batch script designed to download sequencing data, using the fasterq-dump command, by taking a metadata file in CSV format with information about: datasetName, rawdataFolder, processingFolder, sampleNamesFile, fastqExtension, read1Extension, read2Extension. This structure enhances the reproducibility of the pipeline with different datasets, without directly changing the information in the script. The flag –outdir specifies the output directory for the fastq files, and the –threads sets the number of CPUs used. Increasing the number of threads reduces runtime but increases the computational load on the HPC cluster. The flag –split files is mandatory to specify the library type, in this case paired-end reads, otherwise there would not be two sequence FASTQ files (R1 and R2). 
 
 <img width="886" height="100" alt="image" src="https://github.com/user-attachments/assets/e4aab567-d61f-4242-b101-3c65d0b3b197" />
 
@@ -88,15 +88,32 @@ I performed read alignment with STAR solely for visualisation purposes. As descr
 
 
 # VAST
+To run vast-tools properly, certain dependencies must be met: bowtie 1.0.0 67, R 3.1 or higher, Perl 5.10.1 or higher. In addition, the VastDB database must be downloaded separately, as it includes pre-generated bowtie indices, annotations and template files essential for the analysis.
+The output of vast-tools is generated through a sequence of three main tasks. The first step, align, takes the raw RNA-seq data as input, along with the corresponding VastDB files for the species under study. Both FASTQ and FASTA formats are accepted as input. The alignment step involves mapping the raw RNA-seq data to the reference database, VastDB, using Bowtie as the alignment tool. The step automatically detects whether the RNA-seq data is strand-specific and performs the alignment accordingly.
+
+## Align
 The script align.sh  is used to execute the first step. In this script, the raw FASTQ files are provided as input “$input1 and $input2”. The –sp flag specifies the species assembly, while the –name defines the sample name. The --dbDir flag indicates the path to the database directory retrieved from VastDB, and --c sets the number of CPUs allocated for the task, and the –output flag specifies the directory where the output files will be stored.
 
 <img width="886" height="160" alt="image" src="https://github.com/user-attachments/assets/2453f69a-4433-4b09-ac11-713fb96e2eb5" />
 
 
-After aligning the reads to the reference database, vast-tools combine merges the output files from each sample into a consolidated dataset. As shown in Figure 13, the combine step requires access to the results directory from the previous align step. The –output flag specifies this directory, while the remaining parameters are similar to those used in the align.sh script.
+## Combine
 
+After aligning the reads to the reference database, vast-tools combine merges the output files from each sample into a consolidated dataset, providing values for a global splicing metric named Percent Spliced In (PSI) 68. This is calculated as:
+
+
+PSI =  (inclusion reads)/(inclusion+exclusion reads)
+
+The combine step requires access to the results directory from the previous align step. The –output flag specifies this directory, while the remaining parameters are similar to those used in the align.sh script.
 
 <img width="545" height="160" alt="image" src="https://github.com/user-attachments/assets/dbe9fb1d-d9c7-4f56-9bc6-ba4bf98748b2" />
+
+## Compare
+
+The final step involves performing the differential splicing analysis, using the compare command. This function filters splicing events based on read coverage and other features that can be specified before running the code. The difference in PSI values between groups is calculated as, ΔPSI =average_PSI_B - average_PSI_A. Depending on the study´s goals, the output can be filtered based on a defined ΔPSI threshold.68
+The script compare.sh (Figure 14) carries out this task, using a set of defined flags. First, the path to the output from the previous analysis must be specified. The –a and –b flags indicate the sample groups, while --name_A and –name_B assign descriptive labels to each group. A metadata file is given as input with the respective condition or label. Additionally, –min_dPSI flag sets the minimum ΔPSI required for an event to be included in the final output. The –min_range flag sets how much the PSI differs across samples between the lowest and highest values. The  --noVLOW flag filters out low coverage events, ensuring that only reliably quantified events are included in the final output. The –noB3 flag is a quality flag to exclude events labelled as B3, which are events that meet coverage requirements, but exhibit excessive variability in PSI values. The –p_IR flag calculates the probability that an intron retention event is differentially regulated between conditions. The remaining flags are used to specify the species assembly and the database directory retrieved from VASTDB.
+
+<img width="436" height="341" alt="image" src="https://github.com/user-attachments/assets/8e9acda2-c74a-4d30-9ceb-92c0808a45ad" />
 
 
 
