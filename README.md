@@ -56,6 +56,9 @@ A Gene Transfer Format file (GTF) is a tabular text format, each line of which c
 
 The subcommand fasterq-dump is the most recent and an upgraded version of the previous fastq-dump. While it requires more computational resources, it is faster and more efficient. The file sra.sh  is a template batch script designed to download sequencing data, using the fasterq-dump command, by taking a metadata file in CSV format with information about: datasetName, rawdataFolder, processingFolder, sampleNamesFile, fastqExtension, read1Extension, read2Extension. This structure enhances the reproducibility of the pipeline with different datasets, without directly changing the information in the script. The flag –outdir specifies the output directory for the fastq files, and the –threads sets the number of CPUs used. Increasing the number of threads reduces runtime but increases the computational load on the HPC cluster. 
 
+<img width="886" height="100" alt="image" src="https://github.com/user-attachments/assets/e4aab567-d61f-4242-b101-3c65d0b3b197" />
+
+
 
 # FASTQ
 The file fastq.sh uses a metadata file similar to the one used in sra.sh. The output directory is specified with the flag –o and then the path of the output directory. The input files must be specified; if paired sequencing, both should be referenced.
@@ -68,9 +71,15 @@ Despite the excellent quality, I performed a conservative trimming step using Tr
 When STAR attempts to align a read to the genome, it identifies  the longest exact match, the Maximal Mappable Prefix (MMP) that is present in the genome before encountering any mismatches). Once it finds this position, it stops the MMP there and defines whether this is a splice junction, a mismatch or a sequencing error. Considering this, STAR is very effective when detecting and analysing splicing problems, since it is aware of each junction present in the genome. 
 
 The indexing step consists of using a specific set of flags. The –runMode specifies the STAR mode to generate the genome index. The –genomeDir to specify the directory of this process, where the index is going to be stored. The –genomeFastaFiles and the –sjdbGTFfile provide the paths of the reference genome, in this case, with the fastq and gtf format, respectively. Both reference files were retrieved from the Ensembl database.
+
+<img width="819" height="261" alt="image" src="https://github.com/user-attachments/assets/b0a8146e-c585-4c69-86ea-0017eb82171d" />
+
+
 After the genome index directory is completed, the final step is aligning the files to a reference genome. For this step, we used the script align.sh.
 The parameter –runThreadN indicates the number of CPUs allocated for the analysis, while  –genomeDir defines the directory containing the previously generated genome index. The option –readFilesIn indicates the path to the input files (FASTQ files in this case), and the –readFilesCommand is used when the FASTQ files are compressed; here, the zcat command is applied to decompress the files, since STAR cannot process compressed inputs. The –sjdbGTFfile corresponds to the path of the reference GTF file, obtained from Ensembl 62 and –sjdbOverhang ensures that 100 bases of genomic sequence are added on each side of every known splice junction during genome index generation, to achieve a more accurate splice-aware alignment. Finally, the –outFileNamePrefix specifies the path where all output files will be stored, and –outSAMtype defines the format of the alignment files, which in this case are generated as BAM files sorted by genomic coordinates. These parameters collectively characterize the genomic index and alignment process. 
-Alignment  
+
+<img width="855" height="310" alt="image" src="https://github.com/user-attachments/assets/9a3709d1-8344-4277-9522-421048195085" />
+
 
 I performed read alignment with STAR solely for visualisation purposes. As described in the Methods section, the index and alignment steps with STAR were performed to generate four different BAM files, one for each biological sample. These BAM files were not used for downstream quantification but were exclusively intended for the visual inspection of splicing events using the Integrative Genomics Viewer (IGV).   
 
@@ -80,7 +89,15 @@ I performed read alignment with STAR solely for visualisation purposes. As descr
 
 # VAST
 The script align.sh  is used to execute the first step. In this script, the raw FASTQ files are provided as input “$input1 and $input2”. The –sp flag specifies the species assembly, while the –name defines the sample name. The --dbDir flag indicates the path to the database directory retrieved from VastDB, and --c sets the number of CPUs allocated for the task, and the –output flag specifies the directory where the output files will be stored.
+
+<img width="886" height="160" alt="image" src="https://github.com/user-attachments/assets/2453f69a-4433-4b09-ac11-713fb96e2eb5" />
+
+
 After aligning the reads to the reference database, vast-tools combine merges the output files from each sample into a consolidated dataset. As shown in Figure 13, the combine step requires access to the results directory from the previous align step. The –output flag specifies this directory, while the remaining parameters are similar to those used in the align.sh script.
+
+
+<img width="545" height="160" alt="image" src="https://github.com/user-attachments/assets/dbe9fb1d-d9c7-4f56-9bc6-ba4bf98748b2" />
+
 
 
 The final output file includes multiple columns, each representing distinct types of information. Each row corresponds to a specific alternative splicing event at a given genomic position. A single gene may have multiple entries if it exhibits more than one splicing event. The file format is as follows:
