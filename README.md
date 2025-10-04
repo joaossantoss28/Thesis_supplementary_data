@@ -130,3 +130,11 @@ In addition, the output includes a dedicated column for each sample, labelled wi
 # CLUSTERPROFILER
 To visualize the results, I generated a dot plot highlighting the top enriched biological processes using the clusterProfiler R package.
 
+# PTC custom script (ptc.py)
+
+The script ptc.py requires three input files: a reference FASTA file and a GTF annotation file (both obtained from Ensembl), and the vast-tools as input. The reference FASTA file is used to retrieve the genomic sequence, while the GTF file provides detailed annotation of exons and coding sequences (CDS). The script takes the coordinates from both exons and introns to reconstruct a modified transcript sequence that includes the intron. The GTF file is also critical for filtering the events, including only those occurring within CDS regions, validating results based on exon phase information, and ensuring accurate interpretation of frameshift and PTC generation. In the end, the script iterates over this sequence, searching for stop codons, generating a complete output with information and location about that PTC.
+
+
+# Statistical Tests
+
+All statistical tests for each intron feature are reported with their respective labels. Each entry includes the data ID, the Kruskal–Wallis test p-value for comparisons across the three groups, and the results of each pairwise comparison, including group labels, p-values, and median values.
