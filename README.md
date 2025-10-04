@@ -20,6 +20,7 @@ R is a programming language designed for statistical computing and an environmen
 
 # Data Format
 In computational biology, data is stored in standardised formats to ensure interoperability, consistency, and efficient processing. Each file format has a specific type of information, ranging from raw sequencing reads to files with processed genomic variants. 
+
 1.	FASTQ
 A FASTQ file is a text file that contains raw sequence data, obtained directly from the sequencing machines. For a single end run, only one FASTQ file is created for each sample. For a paired-end run, two FASTQ files are created for each sample (one R1 and one R2). Generally, FASTQ files are compressed and have the .fastq.gz extension.53
 A FASTQ file consists of 4 lines:
@@ -27,15 +28,22 @@ A FASTQ file consists of 4 lines:
 2.	The sequence itself, with nucleotides (A, C, T, G and N)
 3.	A separator line with the plus (+) sign
 4.	The base quality scores, for the given sequence, using ASCII characters to represent numerical quality scores.
+
+
 2.	FASTA
 FASTA files are text files that are similar to FASTQ files, also storing nucleotide sequences, yet they do not include quality scores. Each FASTA file contains one or more entries, each of which has two parts:
 1.	The identifier line, starting with a > symbol, the identifier, and some extra information, sometimes about gene function, location, species, length or coverage.
 2.	The sequence line itself
 The next line starts with a >, indicating that the following sequence ends and a new one starts.
+
+
 3.	BAM
 A BAM file is the compressed format of a SAM file, and contains information about read sequences, mapping quality, alignment position, etc. These files store aligned sequencing reads from sequencing techniques, and they are used for variant calling, visualisation, and downstream analysis, such as creating gene count data.55,56
+
+
 4.	CSV and TSV
 CSV (comma-separated values) files are one of the simplest and most used text file formats to store data. Each line/row has values separated by commas, and is highly compatible with Excel, and programming languages including Python and R.
+
 5.	GTF File Format
 A Gene Transfer Format file (GTF) is a tabular text format, each line of which corresponds to an annotation, or feature. Each line has 9 columns related to: reference sequence, source, method, start position, score, strand, phase, and group. This helps identify genes, transcripts, exons and coding sequences. 
 
