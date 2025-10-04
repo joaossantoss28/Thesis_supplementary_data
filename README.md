@@ -2,15 +2,15 @@
 This repository is composed of all files used for the production of the desired thesis
 
 # Coding Languages
-1.	Python 
+##	Python 
 Python is characterised as an interpreted, object-oriented programming language used to build data structures. It is one of the most popular programming languages, making it widely used in the scientific field 42. Python has an extensive ecosystem of libraries such as NumPy, Pandas and BioPython.
 Pandas – Package that provides fast, flexible and expressive data structures such as data frames. It allows users to run certain tasks in data cleaning, transformation and exploration, supporting different file types, including .csv and Excel files43. 
 Biopython – Collection of Python tools, designed specifically for bioinformatics and computational biology, with modules specific for reading and writing different sequence files as well as sequence alignments.44,45
 
-2.	Bash (Shell Scripting)
+##	Bash (Shell Scripting)
 Bash is a scripting language designed for Unix-based systems, for example, the LOBO HPC, which is based on this language. To navigate and work in most HPC clusters, such as LOBO, Bash is the primary scripting language used directly in the terminal and through .sh files. These scripts allow for automation and job scheduling, creating a fully functional framework to run specific tasks.46
 
-3.	R
+##	R
 R is a programming language designed for statistical computing and an environment for graphics. It provides a wide variety of statistical and graphical techniques and good-quality plots 47. R can be extended via packages such as:
   •	ggplot2 – a system to create graphs with different details 48 .
   •	dplyr – a package suited for data manipulation, to help manage large datasets in a simple and efficient way 49.
@@ -21,7 +21,7 @@ R is a programming language designed for statistical computing and an environmen
 # Data Format
 In computational biology, data is stored in standardised formats to ensure interoperability, consistency, and efficient processing. Each file format has a specific type of information, ranging from raw sequencing reads to files with processed genomic variants. 
 
-1.	FASTQ
+##	FASTQ
 A FASTQ file is a text file that contains raw sequence data, obtained directly from the sequencing machines. For a single end run, only one FASTQ file is created for each sample. For a paired-end run, two FASTQ files are created for each sample (one R1 and one R2). Generally, FASTQ files are compressed and have the .fastq.gz extension.53
 A FASTQ file consists of 4 lines:
 1.	A sequence identifier, with the sequencing run label and the cluster information. 
@@ -30,21 +30,21 @@ A FASTQ file consists of 4 lines:
 4.	The base quality scores, for the given sequence, using ASCII characters to represent numerical quality scores.
 
 
-2.	FASTA
+##	FASTA
 FASTA files are text files that are similar to FASTQ files, also storing nucleotide sequences, yet they do not include quality scores. Each FASTA file contains one or more entries, each of which has two parts:
 1.	The identifier line, starting with a > symbol, the identifier, and some extra information, sometimes about gene function, location, species, length or coverage.
 2.	The sequence line itself
 The next line starts with a >, indicating that the following sequence ends and a new one starts.
 
 
-3.	BAM
+##	BAM
 A BAM file is the compressed format of a SAM file, and contains information about read sequences, mapping quality, alignment position, etc. These files store aligned sequencing reads from sequencing techniques, and they are used for variant calling, visualisation, and downstream analysis, such as creating gene count data.55,56
 
 
-4.	CSV and TSV
+##	CSV and TSV
 CSV (comma-separated values) files are one of the simplest and most used text file formats to store data. Each line/row has values separated by commas, and is highly compatible with Excel, and programming languages including Python and R.
 
-5.	GTF File Format
+##	GTF File Format
 A Gene Transfer Format file (GTF) is a tabular text format, each line of which corresponds to an annotation, or feature. Each line has 9 columns related to: reference sequence, source, method, start position, score, strand, phase, and group. This helps identify genes, transcripts, exons and coding sequences. 
 
 
