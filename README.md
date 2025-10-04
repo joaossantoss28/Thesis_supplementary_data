@@ -30,6 +30,9 @@ A FASTQ file consists of 4 lines:
 4.	The base quality scores, for the given sequence, using ASCII characters to represent numerical quality scores.
 
 
+<img width="886" height="84" alt="image" src="https://github.com/user-attachments/assets/7823e015-99d5-4fe9-b0c5-647c3346e457" />
+
+
 ##	FASTA
 FASTA files are text files that are similar to FASTQ files, also storing nucleotide sequences, yet they do not include quality scores. Each FASTA file contains one or more entries, each of which has two parts:
 1.	The identifier line, starting with a > symbol, the identifier, and some extra information, sometimes about gene function, location, species, length or coverage.
