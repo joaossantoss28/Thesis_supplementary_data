@@ -1,14 +1,20 @@
 #!/bin/bash
-#SBATCH --time=72:00:00
-#SBATCH --nodes=1
-#SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=20
-#SBATCH --mem=170G
-#SBATCH --job-name="vast_tools_1_align"
-#SBATCH --output=vast_%j.vast_tools_1_align.out
-#SBATCH --array=0-7%6
+#SBATCH --job-name=vast_zh 
+#SBATCH --mail-type=END,FAIL          
+#SBATCH --mail-user=joaosilvasantos@igc.gulbenkian.pt      
+#SBATCH --ntasks=1                    
+#SBATCH --cpus-per-task=4             
+#SBATCH --mem=50gb                     
+#SBATCH --time=5-00:00:00               
+#SBATCH --output=vast_zh%j.log   
+#SBATCH --array=0-8%8
+# IMPORTANT: if you need to separate error output, add a -e or --error line, specifying
+# the filename for the error log (use the --output line as a template for the new line).
 
-image_path="/mnt/beegfs/apptainer/images/vast-tools_latest.sif"
+export SINGULARITY_BIND="/ifs"  # required for access to /ifs (to improve safety, you can restrict to specific folders)
+
+
+image_path="/Users/.singularity_containers/ADA/vast.sif"
 
 ###########################################################################################
 ##################################### Input Variables #####################################
@@ -34,12 +40,12 @@ echo "test:$sampleNamesFile"
 readarray -t sampleNamesList < <(cat $sampleNamesFile)
 sampleName=${sampleNamesList[$SLURM_ARRAY_TASK_ID]}
 
-input1=$rawDataFolder/${sampleName}${read1Extension}.$fastqExtension.gz
-input2=$rawDataFolder/${sampleName}${read2Extension}.$fastqExtension.gz
+input1=$rawDataFolder/${sampleName}${read1Extension}.$fastqExtension
+input2=$rawDataFolder/${sampleName}${read2Extension}.$fastqExtension
 input1=$(readlink -f $input1)
 input2=$(readlink -f $input2)
 
-resultsFolder="/mnt/nfs/lobo/IMM-NFS/imm/files/vast/output_dir"
+resultsFolder="/ifs/igc/folders/RRA/zhang_files/vast/output_dir"
 mkdir -p $resultsFolder
 
 echo "Sample Name: $sampleName"
@@ -52,7 +58,7 @@ echo "Read 2 Extension: $read2Extension"
 ############## Other variables ###############
 ##############################################
 
-databaseDir="/mnt/beegfs/scratch/IMM/joaossantos/database_dir"
+databaseDir="/ifs/igc/folders/RRA/casella_files/references"
 
 ###########################################################################################
 ######################################### Commands ########################################
@@ -76,8 +82,8 @@ echo "$resultsFolder"
 echo "********************************************************************************"
 echo ""
 
-srun apptainer exec $image_path vast-tools align $input1 $input2 \
-        --sp mm10 \
+srun singularity exec $image_path vast-tools align $input1 $input2 \
+        --sp hg38 \
         --name $sampleName \
         --dbDir $databaseDir \
         -c 8 \
