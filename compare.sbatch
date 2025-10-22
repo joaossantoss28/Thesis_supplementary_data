@@ -1,13 +1,19 @@
 #!/bin/bash
-#SBATCH --time=72:00:00
-#SBATCH --nodes=1
-#SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=20
-#SBATCH --mem=170G
-#SBATCH --job-name="vast_tools_3_combine"
-#SBATCH --output=vast3_%j.vast_tools_3_align.out
+#SBATCH --job-name=vast3
+#SBATCH --mail-type=END,FAIL          
+#SBATCH --mail-user=joaosilvasantos@igc.gulbenkian.pt      
+#SBATCH --ntasks=1                    
+#SBATCH --cpus-per-task=4             
+#SBATCH --mem=50gb                     
+#SBATCH --time=5-00:00:00               
+#SBATCH --output=vast3%j.log   
+# IMPORTANT: if you need to separate error output, add a -e or --error line, specifying
+# the filename for the error log (use the --output line as a template for the new line).
 
-image_path="/mnt/beegfs/apptainer/images/vast-tools_latest.sif"
+export SINGULARITY_BIND="/ifs"  # required for access to /ifs (to improve safety, you can restrict to specific folders)
+
+
+image_path="/Users/.singularity_containers/ADA/vast.sif"
 
 ###########################################################################################
 ##################################### Input Variables #####################################
@@ -61,12 +67,12 @@ echo $resultsFolder
 ########### Input and output file names and paths ###########
 #############################################################
 
-databaseDir="/mnt/nfs/lobo/IMM-NFS/imm/files/vast/database_dir"
+databaseDir="/ifs/igc/folders/RRA/references"
 combineOutputOriginal=$resultsFolder/combineOutput_INCLUSION_LEVELS.tsv
 tidyOutput=$resultsFolder/tidyOutput.tsv
 combineOutputFiltered=$resultsFolder/combineOutput_INCLUSION_LEVELS_tidy.tsv
 ## CHOOSE COMBINE OUTPUT (FILTERED OR ORIGINAL):
-combineOutput=$combineOutputFiltered
+combineOutput=$combineOutputOriginal
 
 compareOutput_toPlot_fileName=compareOutput_toPlot.tsv
 compareOutput_withDPSI_fileName=compareOutput_withDPSI.tsv
@@ -122,13 +128,13 @@ cmd_compare="vast-tools compare \
         -b $group_b_samples \
         -name_A $nameGroupA \
         -name_B $nameGroupB \
-        --min_dPSI 10 \
-        --min_range 5 \
+        --min_dPSI 0 \
+        --min_range 0 \
         --noVLOW \
         --noB3 \
         --p_IR \
         --GO \
-        --sp mm10 \
+        --sp hg38 \
         --dbDir $databaseDir"
 
 if [ "$pairedSamples" == "TRUE" ]; then
@@ -145,11 +151,11 @@ echo ""
 echo $cmd_compare_to_plot
 echo "********************************************************************************"
 echo ""
-srun apptainer exec $image_path $cmd_compare_to_plot
+singularity exec $image_path $cmd_compare_to_plot
 echo ""
 echo ">> Moving output files to results folder..."
 ## Compare plot doesn't allow to choose output directory (only base name), so we have to move the file:
-srun mv $inputFolder/$compareOutput_toPlot_fileName $resultsFolder
+mv $inputFolder/$compareOutput_toPlot_fileName /ifs/igc/folders/RRA/zhang_files/data_quiescence_deep
 echo ""
 
 
@@ -159,10 +165,10 @@ echo ""
 echo $cmd_compare_with_dPSI
 echo "********************************************************************************"
 echo ""
-srun apptainer exec $image_path $cmd_compare_with_dPSI
+singularity exec $image_path $cmd_compare_with_dPSI
 echo ""
 echo ">> Moving output files to results folder..."
-srun mv $inputFolder/$compareOutput_withDPSI_fileName $resultsFolder
+mv $inputFolder/$compareOutput_withDPSI_fileName /ifs/igc/folders/RRA/zhang_files/data_quiescence_deep
 echo ""
 
 
@@ -209,158 +215,8 @@ echo ""
 echo $cmd_plot
 echo "********************************************************************************"
 echo ""
-srun apptainer exec $image_path $cmd_plot
+srun singularity exec $image_path $cmd_plot
 echo ""
-
-#############################
-######### GO files ##########
-#############################
-
-echo "*****************************************************************"
-echo ">> Reorganizing GO files from compare output..."
-echo "*****************************************************************"
-echo ""
-
-## flag --GO will create files for posterior analysis.
-## Put all those files in a folder (to organize)
-mkdir -p $resultsFolder/GO_files
-## Remove files from previous runs:
-rm -rf $resultsFolder/GO_files/*
-## Move files to GO_files folder:
-mv $inputFolder/All_Ev*.txt \
-$inputFolder/AltEx*.txt \
-$inputFolder/BG*.txt \
-$inputFolder/IR_*.txt \
-$resultsFolder/GO_files
-
-## Remove duplicate files:
-rm $resultsFolder/GO_files/*toPlot.txt
-
-## Rename files (to make it easier to understand):
-mv $resultsFolder/GO_files/All* $resultsFolder/GO_files/positive_geneIDs_to_GO.txt
-mv $resultsFolder/GO_files/BG* $resultsFolder/GO_files/background_geneIDs_to_GO.txt
-mv $resultsFolder/GO_files/AltEx* $resultsFolder/GO_files/alternative_exon_geneIDs_to_GO.txt
-mv $resultsFolder/GO_files/IR_DOWN* $resultsFolder/GO_files/intron_higher_retention_in_A_geneIDs_to_GO.txt
-mv $resultsFolder/GO_files/IR_UP* $resultsFolder/GO_files/intron_higher_retention_in_B_geneIDs_to_GO.txt
-
-## Create new file with negative genes (all genes from background minus all genes from positive)
-fgrep -vwf $resultsFolder/GO_files/positive_geneIDs_to_GO.txt $resultsFolder/GO_files/background_geneIDs_to_GO.txt > $resultsFolder/GO_files/negative_geneIDs_to_GO.txt
-
-#############################################################
-########################### DIFF ############################
-#############################################################
-
-## Run diff with default parameters: (0.95 and 0.3)
-diffOutputBaseName1=diffOutput_95_03
-diffOutput1=$resultsFolder/${diffOutputBaseName1}.tsv
-cmd_diff_1="vast-tools diff \
-        -a $group_a_samples \
-        -b $group_b_samples \
-        --sampleNameA $nameGroupA \
-        --sampleNameB $nameGroupB \
-        --input $combineOutput \
-        --prob 0.95 \
-        --minDiff 0.1 \
-        --minSamples 2 \
-        --minReads 10 \
-        -c 10 \
-        --output $resultsFolder \
-        -d $diffOutputBaseName1"
-
-# if [ "$pairedSamples" == "TRUE" ]; then
-#         cmd_diff_1="${cmd_diff_1} --paired=TRUE"
-# fi
-
-## Run diff with less strict parameters: (0.90 and 0.2)
-diffOutputBaseName2=diffOutput_90_02
-diffOutput2=$resultsFolder/${diffOutputBaseName2}.tsv
-cmd_diff_2="vast-tools diff \
-        -a $group_a_samples \
-        -b $group_b_samples \
-        --sampleNameA $nameGroupA \
-        --sampleNameB $nameGroupB \
-        --input $combineOutput \
-        --prob 0.90 \
-        --minDiff 0.2 \
-        --minSamples 2 \
-        --minReads 10 \
-        -c 10 \
-        --output $resultsFolder \
-        -d $diffOutputBaseName2"
-
-# if [ "$pairedSamples" == "TRUE" ]; then
-#         cmd_diff_2="${cmd_diff_2} --paired=TRUE"
-# fi
-
-echo "********************************************************************************"
-echo "Running vast-tools diff with the following command: (default parameters: 0.95 and 0.3)"
-echo ""
-echo $cmd_diff_1
-echo "********************************************************************************"
-echo ""
-srun apptainer exec $image_path $cmd_diff_1
-srun mv $resultsFolder/${diffOutputBaseName1}.tab $diffOutput1
-
-echo ""
-echo "********************************************************************************"
-echo "Running vast-tools diff with the following command: (less strict parameters: 0.90 and 0.2)"
-echo ""
-echo $cmd_diff_2
-echo "********************************************************************************"
-echo ""
-srun apptainer exec $image_path $cmd_diff_2
-srun mv $resultsFolder/${diffOutputBaseName2}.tab $diffOutput2
-
-echo ""
-echo "*****************************************************************"
-echo ">> Creating files with significant events from diffOutput files..."
-echo "*****************************************************************"
-echo ""
-
-## Selects rows from diffOutput where the value in the sixth column is greater than or equal to 0.2 / 0.3:
-## In short, select significant events:
-awk '$6 >= 0.2' $diffOutput1 > $resultsFolder/${diffOutputBaseName1}_filtered_02.tsv
-awk '$6 >= 0.3' $diffOutput1 > $resultsFolder/${diffOutputBaseName1}_filtered_03.tsv
-
-## From vast-tools github about sixth column (or MV column):
-## the minimum value (MV) for |ΔPSI| at 0.95 is 0.3, meaning that there is a 0.95
-## probability that |ΔPSI| is greater than 0.3. Use this value to filter for events
-## that are statistically likely to have at least a minimal difference of some magnitude
-## that you deem to be biologically relevant.
-
-#############################################################
-##################### PLOT DIFF RESULTS #####################
-#############################################################
-
-## Extract events to plot:
-awk 'NR==FNR{events[$2]; next} $2 in events' $resultsFolder/${diffOutputBaseName1}_filtered_02.tsv $combineOutput > $resultsFolder/${diffOutputBaseName1}_toPlot.tsv
-## Extract columnsToPrint:
-cut -f "$columnsToPrint" "$resultsFolder/${diffOutputBaseName1}_toPlot.tsv" > $resultsFolder/temp.tsv
-mv $resultsFolder/temp.tsv $resultsFolder/${diffOutputBaseName1}_toPlot.tsv
-
-cmd_plot="vast-tools plot \
-        -v TRUE -m 1000 \
-        $resultsFolder/${diffOutputBaseName1}_toPlot.tsv"
-
-if [[ -f $resultsFolder/plots_config.tsv ]]; then
-        cmd_plot="$cmd_plot --config $resultsFolder/plots_config.tsv --groupMeans TRUE"
-fi
-
-echo "********************************************************************************"
-echo "Running vast-tools plot with the following command:"
-echo ""
-echo $cmd_plot
-echo "********************************************************************************"
-echo ""
-srun apptainer exec $image_path $cmd_plot
-echo ""
-
-
-echo ""
-echo "********************************************************************"
-echo "FINISHED SCRIPT"
-date
-echo "********************************************************************"
 
 ###########################################################################################
 #################################### Move output file  ####################################
