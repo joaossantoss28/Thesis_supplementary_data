@@ -1,14 +1,19 @@
 #!/bin/bash
-#SBATCH --time=72:00:00
-#SBATCH --nodes=1
-#SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=20
-#SBATCH --mem=170G
-#SBATCH --job-name="vast_tools_2_combine"
-#SBATCH --output=vast2_%j.vast_tools_2_align.out
+#SBATCH --job-name=vast2
+#SBATCH --mail-type=END,FAIL          
+#SBATCH --mail-user=joaosilvasantos@igc.gulbenkian.pt      
+#SBATCH --ntasks=1                    
+#SBATCH --cpus-per-task=4             
+#SBATCH --mem=50gb                     
+#SBATCH --time=5-00:00:00               
+#SBATCH --output=vast2%j.log   
+# IMPORTANT: if you need to separate error output, add a -e or --error line, specifying
+# the filename for the error log (use the --output line as a template for the new line).
+
+export SINGULARITY_BIND="/ifs"  # required for access to /ifs (to improve safety, you can restrict to specific folders)
 
 
-image_path="/mnt/beegfs/apptainer/images/vast-tools_latest.sif"
+image_path="/Users/.singularity_containers/ADA/vast.sif"
 
 ###########################################################################################
 ##################################### Input Variables #####################################
@@ -24,13 +29,13 @@ fi
 datasetName=$(cat $metadataFile | grep datasetName | awk -F , '{print $2}')
 processingFolder=$(cat $metadataFile | grep processingFolder | awk -F , '{print $2}')
 
-resultsFolder=${processingFolder}
+resultsFolder="/ifs/igc/folders/RRA/zhang_files/vast/output_dir"
 
 ##############################################
 ############## Other variables ###############
 ##############################################
 
-databaseDir="/mnt/nfs/lobo/IMM-NFS/imm/files/vast/database_dir"
+databaseDir="/ifs/igc/folders/RRA/casella_files/references"
 combineOutput=$resultsFolder/combineOutput_INCLUSION_LEVELS.tsv
 tidyOutput=$resultsFolder/tidyOutput.tsv
 combineOutputFiltered=$resultsFolder/combineOutput_INCLUSION_LEVELS_tidy.tsv
@@ -57,7 +62,7 @@ echo ""
 
 cmd_combine="vast-tools combine \
         --output $resultsFolder \
-        --sp mm10 \
+        --sp hg38 \
         --dbDir $databaseDir \
         --cores 6"
 
@@ -66,7 +71,7 @@ echo "Running vast-tools combine with the following command:"
 echo $cmd_combine
 echo "********************************************************************************"
 echo ""
-srun apptainer exec $image_path $cmd_combine
+singularity exec $image_path $cmd_combine
 echo ""
 
 ## There is no argument to set output file name, so we have to move it manually
