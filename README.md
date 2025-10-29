@@ -3,26 +3,26 @@ This repository is part of the Master´s Thesis "Deterioration of the transcript
 
 # Coding Languages
 ##	Python 
-Python is characterised as an interpreted, object-oriented programming language used to build data structures. It is one of the most popular programming languages, making it widely used in the scientific field 42. Python has an extensive ecosystem of libraries such as NumPy, Pandas and BioPython.
-Pandas – Package that provides fast, flexible and expressive data structures such as data frames. It allows users to run certain tasks in data cleaning, transformation and exploration, supporting different file types, including .csv and Excel files43. 
-Biopython – Collection of Python tools, designed specifically for bioinformatics and computational biology, with modules specific for reading and writing different sequence files as well as sequence alignments.44,45
+Python is characterised as an interpreted, object-oriented programming language used to build data structures. It is one of the most popular programming languages, making it widely used in the scientific field . Python has an extensive ecosystem of libraries such as NumPy, Pandas and BioPython.
+Pandas – Package that provides fast, flexible and expressive data structures such as data frames. It allows users to run certain tasks in data cleaning, transformation and exploration, supporting different file types, including .csv and Excel files. 
+Biopython – Collection of Python tools, designed specifically for bioinformatics and computational biology, with modules specific for reading and writing different sequence files as well as sequence alignments.
 
 ##	Bash (Shell Scripting)
-Bash is a scripting language designed for Unix-based systems, for example, the LOBO HPC, which is based on this language. To navigate and work in most HPC clusters, such as LOBO, Bash is the primary scripting language used directly in the terminal and through .sh files. These scripts allow for automation and job scheduling, creating a fully functional framework to run specific tasks.46
+Bash is a scripting language designed for Unix-based systems, for example, the LOBO HPC, which is based on this language. To navigate and work in most HPC clusters, such as LOBO, Bash is the primary scripting language used directly in the terminal and through .sh files. These scripts allow for automation and job scheduling, creating a fully functional framework to run specific tasks.
 
 ##	R
 R is a programming language designed for statistical computing and an environment for graphics. It provides a wide variety of statistical and graphical techniques and good-quality plots 47. R can be extended via packages such as:
-  •	ggplot2 – a system to create graphs with different details 48 .
-  •	dplyr – a package suited for data manipulation, to help manage large datasets in a simple and efficient way 49.
-  •	biomaRt – this package allows users to access Ensembl databases by connecting to the BioMart API, querying a wide range of data such as gene names, IDs, and coordinates - without manually downloading files. It is also possible to filter the results based on what information we want 50,51.
-  •	readr – the goal of readr is to provide a fast way to read data from delimited files, such as CSV, TSV 52.
+  •	ggplot2 – a system to create graphs with different details .
+  •	dplyr – a package suited for data manipulation, to help manage large datasets in a simple and efficient way .
+  •	biomaRt – this package allows users to access Ensembl databases by connecting to the BioMart API, querying a wide range of data such as gene names, IDs, and coordinates - without manually downloading files. It is also possible to filter the results based on what information we want .
+  •	readr – the goal of readr is to provide a fast way to read data from delimited files, such as CSV, TSV .
 
 
 # Data Format
 In computational biology, data is stored in standardised formats to ensure interoperability, consistency, and efficient processing. Each file format has a specific type of information, ranging from raw sequencing reads to files with processed genomic variants. 
 
 ##	FASTQ
-A FASTQ file is a text file that contains raw sequence data, obtained directly from the sequencing machines. For a single end run, only one FASTQ file is created for each sample. For a paired-end run, two FASTQ files are created for each sample (one R1 and one R2). Generally, FASTQ files are compressed and have the .fastq.gz extension.53
+A FASTQ file is a text file that contains raw sequence data, obtained directly from the sequencing machines. For a single end run, only one FASTQ file is created for each sample. For a paired-end run, two FASTQ files are created for each sample (one R1 and one R2). Generally, FASTQ files are compressed and have the .fastq.gz extension.
 A FASTQ file consists of 4 lines:
 1.	A sequence identifier, with the sequencing run label and the cluster information. 
 2.	The sequence itself, with nucleotides (A, C, T, G and N)
@@ -41,7 +41,7 @@ The next line starts with a >, indicating that the following sequence ends and a
 
 
 ##	BAM
-A BAM file is the compressed format of a SAM file, and contains information about read sequences, mapping quality, alignment position, etc. These files store aligned sequencing reads from sequencing techniques, and they are used for variant calling, visualisation, and downstream analysis, such as creating gene count data.55,56
+A BAM file is the compressed format of a SAM file, and contains information about read sequences, mapping quality, alignment position, etc. These files store aligned sequencing reads from sequencing techniques, and they are used for variant calling, visualisation, and downstream analysis, such as creating gene count data.
 
 
 ##	CSV and TSV
@@ -63,7 +63,7 @@ The subcommand fasterq-dump is the most recent and an upgraded version of the pr
 # FASTQ
 The file fastq.sh uses a metadata file similar to the one used in sra.sh. The output directory is specified with the flag –o and then the path of the output directory. The input files must be specified; if paired sequencing, both should be referenced.
 
-After downloading the FASTQ files described in Deschênes, M.. et al.   , the first standard step was to perform a quality control assessment using FastQC (v0.12.1) and MultiQC (v1.20), as described in the Methods section. The results indicated overall good quality, as detailed in Figure 15. 
+After downloading the FASTQ files described in Deschênes, M.. et al.   , the first standard step was to perform a quality control assessment using FastQC (v0.12.1) and MultiQC (v1.20), as described in the Methods section. The results indicated overall good quality. 
 Despite the excellent quality, I performed a conservative trimming step using Trim-Galore (v0.6.8) 59. Default parameters were applied, including quality trimming with a Phred score cutoff of 20 and discarding reads shorter than 20 bp, with standard Illumina adapters specified for removal. The output report, multiqc_report.html, provides detailed metrics on GC content, base quality scores, number of reads and duplicates, and other relevant quality indicators
 
 
