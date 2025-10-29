@@ -12,10 +12,10 @@ Bash is a scripting language designed for Unix-based systems, for example, the L
 
 ##	R
 R is a programming language designed for statistical computing and an environment for graphics. It provides a wide variety of statistical and graphical techniques and good-quality plots 47. R can be extended via packages such as:
-  •	ggplot2 – a system to create graphs with different details .
-  •	dplyr – a package suited for data manipulation, to help manage large datasets in a simple and efficient way .
-  •	biomaRt – this package allows users to access Ensembl databases by connecting to the BioMart API, querying a wide range of data such as gene names, IDs, and coordinates - without manually downloading files. It is also possible to filter the results based on what information we want .
-  •	readr – the goal of readr is to provide a fast way to read data from delimited files, such as CSV, TSV .
+* ggplot2 – a system to create graphs with different details .
+* dplyr – a package suited for data manipulation, to help manage large datasets in a simple and efficient way .
+* biomaRt – this package allows users to access Ensembl databases by connecting to the BioMart API, querying a wide range of data such as gene names, IDs, and coordinates - without manually downloading files. It is also possible to filter the results based on what information we want .
+* readr – the goal of readr is to provide a fast way to read data from delimited files, such as CSV, TSV .
 
 
 # Data Format
