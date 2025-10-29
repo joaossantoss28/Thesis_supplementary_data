@@ -118,12 +118,12 @@ The script compare.sh (Figure 14) carries out this task, using a set of defined 
 
 
 The final output file includes multiple columns, each representing distinct types of information. Each row corresponds to a specific alternative splicing event at a given genomic position. A single gene may have multiple entries if it exhibits more than one splicing event. The file format is as follows:
-•	Gene – The gene symbol name (e.g SYDE1)
-•	EVENT – Set of letters and numbers identifying that given event, with information about the species, the type of alternative splicing event and the ID of the event (e.g HsaINT0162432)
-•	COORD – The genomic coordinate of the alternative sequence (e.g chr19:15109398-15109703, location of the retained intron for this event)
-•	LENGTH – The length of the alternative sequence
-•	FullCO – Full set of genomic coordinates of the alternative splicing event (e.g chr19:15109056-15109397=15109704-15110348:+, here we have the information of an IR event that occurred in chromosome 19, the coordinates of the upstream exon being 15109056-15109397, the coordinates of the downstream exon 15109704-15110348, and the strand direction in this case +)
-•	COMPLEX – Type of alternative splicing event (e.g S for exon skipping, IR for intron retention, Alt3 for alternative 3’ splice and Alt5 for alternative 5’ splice)
+* Gene – The gene symbol name (e.g SYDE1)
+* EVENT – Set of letters and numbers identifying that given event, with information about the species, the type of alternative splicing event and the ID of the event (e.g HsaINT0162432)
+* COORD – The genomic coordinate of the alternative sequence (e.g chr19:15109398-15109703, location of the retained intron for this event)
+* LENGTH – The length of the alternative sequence
+* FullCO – Full set of genomic coordinates of the alternative splicing event (e.g chr19:15109056-15109397=15109704-15110348:+, here we have the information of an IR event that occurred in chromosome 19, the coordinates of the upstream exon being 15109056-15109397, the coordinates of the downstream exon 15109704-15110348, and the strand direction in this case +)
+* COMPLEX – Type of alternative splicing event (e.g S for exon skipping, IR for intron retention, Alt3 for alternative 3’ splice and Alt5 for alternative 5’ splice)
 In addition, the output includes a dedicated column for each sample, labelled with the corresponding sample ID, containing the PSI values for each splicing event. For every sample, there is also an accompanying column that provides a set of quality scores computed by vast-tools. These scores are accompanied by the number of reads supporting the inclusion of the splicing event, as well as the number of reads that support its exclusion. 
 
 
