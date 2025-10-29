@@ -1,5 +1,5 @@
 # Thesis_supplementary_data
-This repository is composed of all files used for the production of the desired thesis
+This repository is part of the Master´s Thesis "Deterioration of the transcriptome during ageing", part of the Master in Clinical Bioinformatics - Genome specialization, during the year 2024/2025
 
 # Coding Languages
 ##	Python 
